@@ -18,7 +18,7 @@ COPY cmd ./cmd
 COPY internal ./internal
 COPY kit ./kit
 
-RUN go build -o /poll -a ./cmd/api/main.go
+RUN go build -o /poll -a ./cmd/poll/main.go
 
 
 FROM gcr.io/distroless/base-debian11
