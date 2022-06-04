@@ -2,8 +2,8 @@ name: cd
 
 on:
   push:
-    branches:
-      - tags
+    tags:
+      - "*"
 
 jobs:
   image:
