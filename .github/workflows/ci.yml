@@ -30,10 +30,12 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Set Tag version
         if: startsWith(github.ref, 'refs/tags/')
-        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+        env:
+          RELEASE_VERSION: ${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
       - name: Set SHA version
         if: startsWith(github.ref, 'refs/heads/')
-        run: echo "RELEASE_VERSION=${{ github.sha }}"
+        env:
+          RELEASE_VERSION: ${{ github.sha }}
       - name: Build Docker Image
         uses: docker/build-push-action@v2
         with:
