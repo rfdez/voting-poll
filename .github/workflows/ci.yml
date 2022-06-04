@@ -84,7 +84,7 @@ jobs:
       - name: Install required packages
         run: |
           go install gotest.tools/gotestsum@v1.8.1
-          go install github.com/t-yuki/gocover-cobertura@v1.2.0
+          go install github.com/t-yuki/gocover-cobertura@v0.0.0-20180217150009-aaee18c8195c
       - name: Run gotestsum
         run: |
           gotestsum --junitfile go_test.xml --format testname -- -short -race -coverprofile coverage.txt -covermode atomic -buildvcs=false $(go list ./... | grep -v /vendor/ | tr '\n' ' ')
