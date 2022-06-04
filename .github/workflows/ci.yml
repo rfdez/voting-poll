@@ -2,8 +2,6 @@ name: ci
 
 on:
   push:
-    branches:
-      - main
     tags:
       - "*"
 
@@ -30,20 +28,19 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Set Tag version
-        if: startsWith(github.ref, 'refs/tags/')
-        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
-      - name: Set SHA version
-        if: startsWith(github.ref, 'refs/heads/')
-        run: echo "RELEASE_VERSION=${{ github.sha }}" >> $GITHUB_ENV
-      - name: Build Docker Image
+      - name: Get tag
+        id: tag
+        uses: dawidd6/action-get-tag@v1
+        with:
+          strip_v: true
+      - name: Build and Push Docker Image
         uses: docker/build-push-action@v2
         with:
           context: .
           file: ./Dockerfile
           builder: ${{ steps.buildx.outputs.name }}
-          push: false
-          tags: ghcr.io/${{ github.repository_owner }}/voting-poll:${{ env.RELEASE_VERSION }}
+          push: true
+          tags: ghcr.io/${{ github.repository_owner }}/voting-poll:${{steps.tag.outputs.tag}}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
   lint:
@@ -80,3 +77,18 @@ jobs:
         run: gotestsum --junitfile go_test.xml --format testname -- -short -race -coverprofile coverage.txt -covermode atomic -buildvcs=false $(go list ./... | grep -v /vendor/ | tr '\n' ' ')
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v2
+  release:
+    name: Release
+    needs:
+      - build
+      - lint
+      - test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: GitHub Release
+        uses: ncipollo/release-action@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ steps.tag.outputs.tag }}
