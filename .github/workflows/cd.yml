@@ -1,6 +1,9 @@
 name: cd
 
 on:
+  workflow_run:
+    workflows: [ci]
+    types: [completed]
   push:
     tags:
       - "*"
