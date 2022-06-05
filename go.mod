@@ -10,10 +10,15 @@ require (
 	gotest.tools v2.2.0+incompatible
 )
 
-require github.com/huandu/xstrings v1.3.2 // indirect
+require (
+	github.com/huandu/xstrings v1.3.2 // indirect
+	github.com/pborman/uuid v1.2.1 // indirect
+	github.com/rabbitmq/amqp091-go v1.3.4 // indirect
+)
 
 require (
 	github.com/DATA-DOG/go-sqlmock v1.5.0
+	github.com/NeowayLabs/wabbit v0.0.0-20210927194032-73ad61d1620e
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/go-playground/locales v0.14.0 // indirect
@@ -33,6 +38,7 @@ require (
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/stretchr/objx v0.1.0 // indirect
 	github.com/ugorji/go/codec v1.2.7 // indirect
+	github.com/wagslane/go-rabbitmq v0.10.0
 	golang.org/x/crypto v0.0.0-20210711020723-a769d52b0f97 // indirect
 	golang.org/x/net v0.0.0-20210226172049-e18ecbb05110 // indirect
 	golang.org/x/sys v0.0.0-20210806184541-e5e7981a1069 // indirect
