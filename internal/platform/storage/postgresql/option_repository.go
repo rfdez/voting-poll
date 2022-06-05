@@ -23,6 +23,35 @@ func NewOptionRepository(db *sql.DB, dbTimeout time.Duration) voting.OptionRepos
 	}
 }
 
+// Find implements the OptionRepository interface.
+func (r *optionRepository) Find(ctx context.Context, id voting.OptionID) (voting.Option, error) {
+	optSQLStruct := sqlbuilder.NewStruct(new(sqlOption))
+
+	sb := optSQLStruct.SelectFrom(sqlOptionTable)
+	sb.Where(sb.E("id", id.String()))
+
+	query, args := sb.BuildWithFlavor(sqlbuilder.PostgreSQL)
+
+	ctxTimeout, cancel := context.WithTimeout(ctx, r.dbTimeout)
+	defer cancel()
+
+	var opt sqlOption
+	if err := r.db.QueryRowContext(ctxTimeout, query, args...).Scan(optSQLStruct.Addr(&opt)...); err != nil {
+		if err == sql.ErrNoRows {
+			return voting.Option{}, errors.NewNotFound("option %s not found", id.String())
+		}
+
+		return voting.Option{}, errors.Wrap(err, "error finding option")
+	}
+
+	p, err := voting.NewOption(opt.ID, opt.Title, opt.Description, opt.PollID, opt.Votes)
+	if err != nil {
+		return voting.Option{}, err
+	}
+
+	return p, nil
+}
+
 // Save implements the OptionRepository interface.
 func (r *optionRepository) Save(ctx context.Context, option voting.Option) error {
 	optSQLStruct := sqlbuilder.NewStruct(new(sqlOption))
@@ -32,6 +61,7 @@ func (r *optionRepository) Save(ctx context.Context, option voting.Option) error
 		Title:       option.Title().String(),
 		Description: option.Description().String(),
 		PollID:      option.PollID().String(),
+		Votes:       option.Votes().Value(),
 	})
 
 	query, args := sb.BuildWithFlavor(sqlbuilder.PostgreSQL)

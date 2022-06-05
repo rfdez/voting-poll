@@ -48,7 +48,7 @@ func (s *service) CreateOption(ctx context.Context, id, title, description, poll
 		return err
 	}
 
-	option, err := voting.NewOption(id, title, description, pollID)
+	option, err := voting.NewOption(id, title, description, pollID, 0)
 	if err != nil {
 		return err
 	}

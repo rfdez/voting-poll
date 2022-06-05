@@ -9,4 +9,5 @@ type sqlOption struct {
 	Title       string `db:"title"`
 	Description string `db:"description"`
 	PollID      string `db:"poll_id"`
+	Votes       int    `db:"votes"`
 }

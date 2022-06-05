@@ -14,6 +14,27 @@ type OptionRepository struct {
 	mock.Mock
 }
 
+// Find provides a mock function with given fields: _a0, _a1
+func (_m *OptionRepository) Find(_a0 context.Context, _a1 voting.OptionID) (voting.Option, error) {
+	ret := _m.Called(_a0, _a1)
+
+	var r0 voting.Option
+	if rf, ok := ret.Get(0).(func(context.Context, voting.OptionID) voting.Option); ok {
+		r0 = rf(_a0, _a1)
+	} else {
+		r0 = ret.Get(0).(voting.Option)
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(context.Context, voting.OptionID) error); ok {
+		r1 = rf(_a0, _a1)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // Save provides a mock function with given fields: _a0, _a1
 func (_m *OptionRepository) Save(_a0 context.Context, _a1 voting.Option) error {
 	ret := _m.Called(_a0, _a1)

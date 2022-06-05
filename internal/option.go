@@ -71,23 +71,46 @@ func (description OptionDescription) String() string {
 	return description.value
 }
 
+// OptionVotes represents the number of votes for an option.
+type OptionVotes struct {
+	value int
+}
+
+// NewOptionVotes creates a new OptionVotes.
+func NewOptionVotes(value int) (OptionVotes, error) {
+	if value < 0 {
+		return OptionVotes{}, errors.NewWrongInput("option votes cannot be negative")
+	}
+
+	return OptionVotes{
+		value: value,
+	}, nil
+}
+
+// Value returns the Option votes.
+func (votes OptionVotes) Value() int {
+	return votes.value
+}
+
 // Option is the data structure that represents a poll option.
 type Option struct {
 	id          OptionID
 	title       OptionTitle
 	description OptionDescription
 	pollID      PollID
+	votes       OptionVotes
 }
 
 // OptionRepository is the interface that must be implemented by the Option repository.
 type OptionRepository interface {
+	Find(context.Context, OptionID) (Option, error)
 	Save(context.Context, Option) error
 }
 
 //go:generate mockery --case=snake --outpkg=storagemocks --output=platform/storage/storagemocks --name=OptionRepository
 
 // NewOption creates a new Option.
-func NewOption(id, name, description, pollID string) (Option, error) {
+func NewOption(id, name, description, pollID string, votes int) (Option, error) {
 	idVO, err := NewOptionID(id)
 	if err != nil {
 		return Option{}, err
@@ -105,11 +128,17 @@ func NewOption(id, name, description, pollID string) (Option, error) {
 		return Option{}, err
 	}
 
+	optVotesVO, err := NewOptionVotes(votes)
+	if err != nil {
+		return Option{}, err
+	}
+
 	option := Option{
 		id:          idVO,
 		title:       titleVO,
 		description: descriptionVO,
 		pollID:      pollIDVO,
+		votes:       optVotesVO,
 	}
 
 	return option, nil
@@ -133,4 +162,20 @@ func (p Option) Description() OptionDescription {
 // PollID returns the Option poll identifier.
 func (p Option) PollID() PollID {
 	return p.pollID
+}
+
+// Votes returns the Option votes.
+func (p Option) Votes() OptionVotes {
+	return p.votes
+}
+
+// DecreaseVotes decreases the Option votes.
+func (p *Option) DecreaseVotes() error {
+	if p.votes.value == 0 {
+		return errors.NewWrongInput("cannot decrease votes when option has no votes")
+	}
+
+	p.votes.value--
+
+	return nil
 }
