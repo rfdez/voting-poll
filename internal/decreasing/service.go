@@ -2,7 +2,6 @@ package decreasing
 
 import (
 	"context"
-	"log"
 
 	voting "github.com/rfdez/voting-poll/internal"
 )
@@ -34,13 +33,9 @@ func (s *service) DecreaseOptionVotes(ctx context.Context, optionID string) erro
 		return err
 	}
 
-	log.Print(option.Votes().Value())
-
 	if err := option.DecreaseVotes(); err != nil {
 		return err
 	}
-
-	log.Print(option.Votes().Value())
 
 	return s.optionRepository.Save(ctx, option)
 }
