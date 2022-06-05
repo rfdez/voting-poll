@@ -9,14 +9,23 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/rfdez/voting-poll/internal/platform/server/http/handler/poll"
+	"github.com/rfdez/voting-poll/kit/command/commandmocks"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 )
 
-func TestHandler_Check(t *testing.T) {
+func TestHandler_Create(t *testing.T) {
+	commandBus := new(commandmocks.Bus)
+	commandBus.On(
+		"Dispatch",
+		mock.Anything,
+		mock.AnythingOfType("creating.PollCommand"),
+	).Return(nil)
+
 	gin.SetMode(gin.TestMode)
 	r := gin.New()
-	r.PUT("/polls/:id", poll.CreateHandler())
+	r.PUT("/polls/:id", poll.CreateHandler(commandBus))
 
 	t.Run("given an invalid request it returns 400", func(t *testing.T) {
 		b, err := json.Marshal(map[string]interface{}{

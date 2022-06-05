@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/rfdez/voting-poll/kit/command"
 )
 
 type createRequest struct {
@@ -12,7 +13,7 @@ type createRequest struct {
 }
 
 // CreateHandler returns an HTTP handler to perform health checks.
-func CreateHandler() gin.HandlerFunc {
+func CreateHandler(commandBus command.Bus) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var req createRequest
 		if err := ctx.ShouldBindJSON(&req); err != nil {

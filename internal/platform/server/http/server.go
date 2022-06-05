@@ -15,6 +15,7 @@ import (
 	"github.com/rfdez/voting-poll/internal/platform/server/http/handler/poll"
 	"github.com/rfdez/voting-poll/internal/platform/server/http/middleware/logging"
 	"github.com/rfdez/voting-poll/internal/platform/server/http/middleware/recovery"
+	"github.com/rfdez/voting-poll/kit/command"
 )
 
 type Server struct {
@@ -22,9 +23,12 @@ type Server struct {
 	engine   *gin.Engine
 
 	shutdownTimeout time.Duration
+
+	// deps
+	commandBus command.Bus
 }
 
-func NewServer(ctx context.Context, host string, port uint, shutdownTimeout time.Duration) (context.Context, Server) {
+func NewServer(ctx context.Context, host string, port uint, shutdownTimeout time.Duration, commandBus command.Bus) (context.Context, Server) {
 	gin.SetMode(gin.ReleaseMode)
 
 	srv := Server{
@@ -32,6 +36,9 @@ func NewServer(ctx context.Context, host string, port uint, shutdownTimeout time
 		engine:   gin.New(),
 
 		shutdownTimeout: shutdownTimeout,
+
+		// deps
+		commandBus: commandBus,
 	}
 
 	srv.registerRoutes()
@@ -44,7 +51,7 @@ func (s *Server) registerRoutes() {
 
 	// Register routes
 	s.engine.GET("/ping", health.PingHandler())
-	s.engine.PUT("/polls/:id", poll.CreateHandler())
+	s.engine.PUT("/polls/:id", poll.CreateHandler(s.commandBus))
 }
 
 func (s *Server) Run(ctx context.Context) error {
