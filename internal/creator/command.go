@@ -33,19 +33,27 @@ func (c PollCommand) Type() command.Type {
 
 // PollCommandHandler is a handler for PollCommand.
 type PollCommandHandler struct {
+	service Service
 }
 
 // NewPollCommandHandler creates a new PollCommandHandler.
-func NewPollCommandHandler() PollCommandHandler {
-	return PollCommandHandler{}
+func NewPollCommandHandler(service Service) PollCommandHandler {
+	return PollCommandHandler{
+		service: service,
+	}
 }
 
 // Handle implements command.Handler.
 func (h PollCommandHandler) Handle(ctx context.Context, cmd command.Command) error {
-	_, ok := cmd.(PollCommand)
+	createPollCmd, ok := cmd.(PollCommand)
 	if !ok {
 		return errors.New("unexpected command")
 	}
 
-	return nil
+	return h.service.CreatePoll(
+		ctx,
+		createPollCmd.id,
+		createPollCmd.title,
+		createPollCmd.description,
+	)
 }
