@@ -1,11 +1,11 @@
-package creator_test
+package creating_test
 
 import (
 	"context"
 	"testing"
 
 	voting "github.com/rfdez/voting-poll/internal"
-	"github.com/rfdez/voting-poll/internal/creator"
+	"github.com/rfdez/voting-poll/internal/creating"
 	"github.com/rfdez/voting-poll/internal/errors"
 	"github.com/rfdez/voting-poll/internal/platform/storage/storagemocks"
 	"github.com/stretchr/testify/assert"
@@ -19,7 +19,7 @@ func Test_Service_CreatePoll_RepositoryError(t *testing.T) {
 	pollRepositoryMock.On("Save", mock.Anything, mock.AnythingOfType("voting.Poll")).Return(errors.New("error"))
 	optionRepositoryMock := new(storagemocks.OptionRepository)
 
-	creatorService := creator.NewService(pollRepositoryMock, optionRepositoryMock)
+	creatorService := creating.NewService(pollRepositoryMock, optionRepositoryMock)
 
 	err := creatorService.CreatePoll(context.Background(), pollID, pollTitle, pollDesc)
 
@@ -34,7 +34,7 @@ func Test_Service_CreatePoll_Succeed(t *testing.T) {
 	pollRepositoryMock.On("Save", mock.Anything, mock.AnythingOfType("voting.Poll")).Return(nil)
 	optionRepositoryMock := new(storagemocks.OptionRepository)
 
-	creatorService := creator.NewService(pollRepositoryMock, optionRepositoryMock)
+	creatorService := creating.NewService(pollRepositoryMock, optionRepositoryMock)
 
 	err := creatorService.CreatePoll(context.Background(), pollID, pollTitle, pollDesc)
 
@@ -50,7 +50,7 @@ func Test_Service_CreateOption_RepositoryError(t *testing.T) {
 	optionRepositoryMock := new(storagemocks.OptionRepository)
 	optionRepositoryMock.On("Save", mock.Anything, mock.AnythingOfType("voting.Option")).Return(errors.New("error"))
 
-	creatorService := creator.NewService(pollRepositoryMock, optionRepositoryMock)
+	creatorService := creating.NewService(pollRepositoryMock, optionRepositoryMock)
 
 	err := creatorService.CreateOption(context.Background(), id, optionTitle, optionDesc, pollID)
 
@@ -67,7 +67,7 @@ func Test_Service_CreateOption_Succeed(t *testing.T) {
 	optionRepositoryMock := new(storagemocks.OptionRepository)
 	optionRepositoryMock.On("Save", mock.Anything, mock.AnythingOfType("voting.Option")).Return(nil)
 
-	creatorService := creator.NewService(pollRepositoryMock, optionRepositoryMock)
+	creatorService := creating.NewService(pollRepositoryMock, optionRepositoryMock)
 
 	err := creatorService.CreateOption(context.Background(), id, optionTitle, optionDesc, pollID)
 

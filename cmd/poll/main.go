@@ -9,7 +9,7 @@ import (
 
 	"github.com/kelseyhightower/envconfig"
 	_ "github.com/lib/pq"
-	"github.com/rfdez/voting-poll/internal/creator"
+	"github.com/rfdez/voting-poll/internal/creating"
 	"github.com/rfdez/voting-poll/internal/platform/bus/inmemory"
 	"github.com/rfdez/voting-poll/internal/platform/server/http"
 	"github.com/rfdez/voting-poll/internal/platform/storage/postgresql"
@@ -38,16 +38,16 @@ func main() {
 	)
 
 	var (
-		creatorService = creator.NewService(pollRepository, optionRepository)
+		creatingService = creating.NewService(pollRepository, optionRepository)
 	)
 
 	var (
-		createPollCommandHandler   = creator.NewPollCommandHandler(creatorService)
-		createOptionCommandHandler = creator.NewOptionCommandHandler(creatorService)
+		createPollCommandHandler   = creating.NewPollCommandHandler(creatingService)
+		createOptionCommandHandler = creating.NewOptionCommandHandler(creatingService)
 	)
 
-	commandBus.Register(creator.PollCommandType, createPollCommandHandler)
-	commandBus.Register(creator.OptionCommandType, createOptionCommandHandler)
+	commandBus.Register(creating.PollCommandType, createPollCommandHandler)
+	commandBus.Register(creating.OptionCommandType, createOptionCommandHandler)
 
 	ctx, httpSrv := http.NewServer(context.Background(), cfg.HttpHost, cfg.HttpPort, cfg.ShutdownTimeout, commandBus)
 	if err := httpSrv.Run(ctx); err != nil {

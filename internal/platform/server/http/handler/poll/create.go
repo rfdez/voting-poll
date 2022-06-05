@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/rfdez/voting-poll/internal/creator"
+	"github.com/rfdez/voting-poll/internal/creating"
 	"github.com/rfdez/voting-poll/internal/errors"
 	"github.com/rfdez/voting-poll/kit/command"
 )
@@ -23,7 +23,7 @@ func CreateHandler(commandBus command.Bus) gin.HandlerFunc {
 			return
 		}
 
-		err := commandBus.Dispatch(ctx, creator.NewPollCommand(
+		err := commandBus.Dispatch(ctx, creating.NewPollCommand(
 			ctx.Param("id"),
 			req.Title,
 			req.Description,

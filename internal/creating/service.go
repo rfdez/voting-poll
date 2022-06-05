@@ -1,4 +1,4 @@
-package creator
+package creating
 
 import (
 	"context"
@@ -6,7 +6,7 @@ import (
 	voting "github.com/rfdez/voting-poll/internal"
 )
 
-// Service is the interface that must be implemented by the creator service.
+// Service is the interface that must be implemented by the creating service.
 type Service interface {
 	CreatePoll(ctx context.Context, id, title, description string) error
 	CreateOption(ctx context.Context, id, title, description, pollID string) error
@@ -17,7 +17,7 @@ type service struct {
 	optionRepository voting.OptionRepository
 }
 
-// NewService creates a new creator service.
+// NewService creates a new creating service.
 func NewService(pollRepository voting.PollRepository, optionRepository voting.OptionRepository) Service {
 	return &service{
 		pollRepository:   pollRepository,
