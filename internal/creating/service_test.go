@@ -19,9 +19,9 @@ func Test_Service_CreatePoll_RepositoryError(t *testing.T) {
 	pollRepositoryMock.On("Save", mock.Anything, mock.AnythingOfType("voting.Poll")).Return(errors.New("error"))
 	optionRepositoryMock := new(storagemocks.OptionRepository)
 
-	creatorService := creating.NewService(pollRepositoryMock, optionRepositoryMock)
+	creatingService := creating.NewService(pollRepositoryMock, optionRepositoryMock)
 
-	err := creatorService.CreatePoll(context.Background(), pollID, pollTitle, pollDesc)
+	err := creatingService.CreatePoll(context.Background(), pollID, pollTitle, pollDesc)
 
 	pollRepositoryMock.AssertExpectations(t)
 	assert.Error(t, err)
@@ -34,9 +34,9 @@ func Test_Service_CreatePoll_Succeed(t *testing.T) {
 	pollRepositoryMock.On("Save", mock.Anything, mock.AnythingOfType("voting.Poll")).Return(nil)
 	optionRepositoryMock := new(storagemocks.OptionRepository)
 
-	creatorService := creating.NewService(pollRepositoryMock, optionRepositoryMock)
+	creatingService := creating.NewService(pollRepositoryMock, optionRepositoryMock)
 
-	err := creatorService.CreatePoll(context.Background(), pollID, pollTitle, pollDesc)
+	err := creatingService.CreatePoll(context.Background(), pollID, pollTitle, pollDesc)
 
 	pollRepositoryMock.AssertExpectations(t)
 	assert.NoError(t, err)
@@ -50,9 +50,9 @@ func Test_Service_CreateOption_RepositoryError(t *testing.T) {
 	optionRepositoryMock := new(storagemocks.OptionRepository)
 	optionRepositoryMock.On("Save", mock.Anything, mock.AnythingOfType("voting.Option")).Return(errors.New("error"))
 
-	creatorService := creating.NewService(pollRepositoryMock, optionRepositoryMock)
+	creatingService := creating.NewService(pollRepositoryMock, optionRepositoryMock)
 
-	err := creatorService.CreateOption(context.Background(), id, optionTitle, optionDesc, pollID)
+	err := creatingService.CreateOption(context.Background(), id, optionTitle, optionDesc, pollID)
 
 	pollRepositoryMock.AssertExpectations(t)
 	optionRepositoryMock.AssertExpectations(t)
@@ -67,9 +67,9 @@ func Test_Service_CreateOption_Succeed(t *testing.T) {
 	optionRepositoryMock := new(storagemocks.OptionRepository)
 	optionRepositoryMock.On("Save", mock.Anything, mock.AnythingOfType("voting.Option")).Return(nil)
 
-	creatorService := creating.NewService(pollRepositoryMock, optionRepositoryMock)
+	creatingService := creating.NewService(pollRepositoryMock, optionRepositoryMock)
 
-	err := creatorService.CreateOption(context.Background(), id, optionTitle, optionDesc, pollID)
+	err := creatingService.CreateOption(context.Background(), id, optionTitle, optionDesc, pollID)
 
 	pollRepositoryMock.AssertExpectations(t)
 	optionRepositoryMock.AssertExpectations(t)

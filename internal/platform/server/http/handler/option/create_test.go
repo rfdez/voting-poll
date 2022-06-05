@@ -20,7 +20,7 @@ func TestHandler_Create(t *testing.T) {
 	commandBus.On(
 		"Dispatch",
 		mock.Anything,
-		mock.AnythingOfType("creator.OptionCommand"),
+		mock.AnythingOfType("creating.OptionCommand"),
 	).Return(nil)
 
 	gin.SetMode(gin.TestMode)
