@@ -11,7 +11,7 @@ import (
 	"gotest.tools/assert"
 )
 
-func TestHandler_Check(t *testing.T) {
+func TestHandler_Ping(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	r := gin.New()
 	r.GET("/ping", health.PingHandler())
