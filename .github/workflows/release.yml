@@ -6,16 +6,15 @@ on:
 
 jobs:
   prepare-release:
-    name: Checkout
+    name: Create GitHub Release
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
       - name: Setup vars
         run: |
+          PRE_RELEASE=true
           if [[ ${{ github.event.ref }} =~ ^refs/tags/(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$ ]]; then
-            PRE_RELEASE=true
-          else
             PRE_RELEASE=false
           fi
 
