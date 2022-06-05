@@ -10,7 +10,10 @@ require (
 	gotest.tools v2.2.0+incompatible
 )
 
+require github.com/huandu/xstrings v1.3.2 // indirect
+
 require (
+	github.com/DATA-DOG/go-sqlmock v1.5.0
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/go-playground/locales v0.14.0 // indirect
@@ -19,6 +22,7 @@ require (
 	github.com/goccy/go-json v0.9.7 // indirect
 	github.com/google/go-cmp v0.5.5 // indirect
 	github.com/google/uuid v1.3.0
+	github.com/huandu/go-sqlbuilder v1.13.0
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/mattn/go-isatty v0.0.14 // indirect
