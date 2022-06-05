@@ -80,7 +80,8 @@ type Poll struct {
 
 // PollRepository is the interface that must be implemented by the poll repository.
 type PollRepository interface {
-	Save(ctx context.Context, poll Poll) error
+	Find(context.Context, PollID) (Poll, error)
+	Save(context.Context, Poll) error
 }
 
 //go:generate mockery --case=snake --outpkg=storagemocks --output=platform/storage/storagemocks --name=PollRepository

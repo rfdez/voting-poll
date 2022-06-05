@@ -23,6 +23,35 @@ func NewPollRepository(db *sql.DB, dbTimeout time.Duration) voting.PollRepositor
 	}
 }
 
+// Find implements the PollRepository interface.
+func (r *pollRepository) Find(ctx context.Context, id voting.PollID) (voting.Poll, error) {
+	pollSQLStruct := sqlbuilder.NewStruct(new(sqlPoll))
+
+	sb := pollSQLStruct.SelectFrom(sqlPollTable)
+	sb.Where(sb.E("id", id.String()))
+
+	query, args := sb.BuildWithFlavor(sqlbuilder.PostgreSQL)
+
+	ctxTimeout, cancel := context.WithTimeout(ctx, r.dbTimeout)
+	defer cancel()
+
+	var poll sqlPoll
+	if err := r.db.QueryRowContext(ctxTimeout, query, args...).Scan(pollSQLStruct.Addr(&poll)...); err != nil {
+		if err == sql.ErrNoRows {
+			return voting.Poll{}, errors.NewNotFound("poll %s not found", id.String())
+		}
+
+		return voting.Poll{}, errors.Wrap(err, "error finding poll")
+	}
+
+	p, err := voting.NewPoll(poll.ID, poll.Title, poll.Description)
+	if err != nil {
+		return voting.Poll{}, err
+	}
+
+	return p, nil
+}
+
 // Save implements the PollRepository interface.
 func (r *pollRepository) Save(ctx context.Context, poll voting.Poll) error {
 	pollSQLStruct := sqlbuilder.NewStruct(new(sqlPoll))

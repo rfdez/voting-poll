@@ -12,6 +12,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/rfdez/voting-poll/internal/platform/server/http/handler/health"
+	"github.com/rfdez/voting-poll/internal/platform/server/http/handler/option"
 	"github.com/rfdez/voting-poll/internal/platform/server/http/handler/poll"
 	"github.com/rfdez/voting-poll/internal/platform/server/http/middleware/logging"
 	"github.com/rfdez/voting-poll/internal/platform/server/http/middleware/recovery"
@@ -52,6 +53,7 @@ func (s *Server) registerRoutes() {
 	// Register routes
 	s.engine.GET("/ping", health.PingHandler())
 	s.engine.PUT("/polls/:id", poll.CreateHandler(s.commandBus))
+	s.engine.PUT("/polls/:poll_id/options/:id", option.CreateHandler(s.commandBus))
 }
 
 func (s *Server) Run(ctx context.Context) error {

@@ -33,18 +33,21 @@ func main() {
 	)
 
 	var (
-		pollRepository = postgresql.NewPollRepository(db, cfg.DbTimeout)
+		pollRepository   = postgresql.NewPollRepository(db, cfg.DbTimeout)
+		optionRepository = postgresql.NewOptionRepository(db, cfg.DbTimeout)
 	)
 
 	var (
-		creatorService = creator.NewService(pollRepository)
+		creatorService = creator.NewService(pollRepository, optionRepository)
 	)
 
 	var (
-		createPollCommandHandler = creator.NewPollCommandHandler(creatorService)
+		createPollCommandHandler   = creator.NewPollCommandHandler(creatorService)
+		createOptionCommandHandler = creator.NewOptionCommandHandler(creatorService)
 	)
 
 	commandBus.Register(creator.PollCommandType, createPollCommandHandler)
+	commandBus.Register(creator.OptionCommandType, createOptionCommandHandler)
 
 	ctx, httpSrv := http.NewServer(context.Background(), cfg.HttpHost, cfg.HttpPort, cfg.ShutdownTimeout, commandBus)
 	if err := httpSrv.Run(ctx); err != nil {

@@ -8,7 +8,8 @@ import (
 )
 
 const (
-	PollCommandType command.Type = "voting-app.voting-poll.1.command.poll.create"
+	PollCommandType   command.Type = "voting-app.voting-poll.1.command.poll.create"
+	OptionCommandType command.Type = "voting-app.voting-poll.1.command.option.create"
 )
 
 // PollCommand is a command to create a poll.
@@ -55,5 +56,55 @@ func (h PollCommandHandler) Handle(ctx context.Context, cmd command.Command) err
 		createPollCmd.id,
 		createPollCmd.title,
 		createPollCmd.description,
+	)
+}
+
+// OptionCommand is a command to create a option.
+type OptionCommand struct {
+	id          string
+	title       string
+	description string
+	pollID      string
+}
+
+// NewOptionCommand creates a new OptionCommand.
+func NewOptionCommand(id, title, description, pollID string) OptionCommand {
+	return OptionCommand{
+		id:          id,
+		title:       title,
+		description: description,
+		pollID:      pollID,
+	}
+}
+
+func (c OptionCommand) Type() command.Type {
+	return OptionCommandType
+}
+
+// OptionCommandHandler is a handler for OptionCommand.
+type OptionCommandHandler struct {
+	service Service
+}
+
+// NewOptionCommandHandler creates a new OptionCommandHandler.
+func NewOptionCommandHandler(service Service) OptionCommandHandler {
+	return OptionCommandHandler{
+		service: service,
+	}
+}
+
+// Handle implements command.Handler.
+func (h OptionCommandHandler) Handle(ctx context.Context, cmd command.Command) error {
+	createOptionCmd, ok := cmd.(OptionCommand)
+	if !ok {
+		return errors.New("unexpected command")
+	}
+
+	return h.service.CreateOption(
+		ctx,
+		createOptionCmd.id,
+		createOptionCmd.title,
+		createOptionCmd.description,
+		createOptionCmd.pollID,
 	)
 }
