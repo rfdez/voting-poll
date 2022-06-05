@@ -61,6 +61,10 @@ func (r *pollRepository) Save(ctx context.Context, poll voting.Poll) error {
 		Title:       poll.Title().String(),
 		Description: poll.Description().String(),
 	})
+	sb.SQL(`
+		ON CONFLICT (id)
+		DO UPDATE SET
+			title = EXCLUDED.title, description = EXCLUDED.description`)
 
 	query, args := sb.BuildWithFlavor(sqlbuilder.PostgreSQL)
 

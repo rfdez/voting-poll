@@ -63,6 +63,10 @@ func (r *optionRepository) Save(ctx context.Context, option voting.Option) error
 		PollID:      option.PollID().String(),
 		Votes:       option.Votes().Value(),
 	})
+	sb.SQL(`
+		ON CONFLICT (id)
+		DO UPDATE SET
+			title = EXCLUDED.title, description = EXCLUDED.description, poll_id = EXCLUDED.poll_id, votes = EXCLUDED.votes`)
 
 	query, args := sb.BuildWithFlavor(sqlbuilder.PostgreSQL)
 

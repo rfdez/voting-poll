@@ -21,8 +21,11 @@ func Test_PollRepository_Save_RepositoryError(t *testing.T) {
 	db, sqlMock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
 	require.NoError(t, err)
 
-	sqlMock.ExpectExec(
-		"INSERT INTO polls (id, title, description) VALUES ($1, $2, $3)").
+	sqlMock.ExpectExec(`
+		INSERT INTO polls (id, title, description) VALUES ($1, $2, $3)
+			ON CONFLICT (id)
+			DO UPDATE SET
+				title = EXCLUDED.title, description = EXCLUDED.description`).
 		WithArgs(id, title, desc).
 		WillReturnError(errors.New("error"))
 
@@ -42,8 +45,11 @@ func Test_PollRepository_Save_Succeed(t *testing.T) {
 	db, sqlMock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
 	require.NoError(t, err)
 
-	sqlMock.ExpectExec(
-		"INSERT INTO polls (id, title, description) VALUES ($1, $2, $3)").
+	sqlMock.ExpectExec(`
+		INSERT INTO polls (id, title, description) VALUES ($1, $2, $3)
+			ON CONFLICT (id)
+			DO UPDATE SET
+				title = EXCLUDED.title, description = EXCLUDED.description`).
 		WithArgs(id, title, desc).
 		WillReturnResult(sqlmock.NewResult(0, 1))
 
