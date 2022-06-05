@@ -2,12 +2,12 @@ package postgresql_test
 
 import (
 	"context"
-	"errors"
 	"testing"
 	"time"
 
 	"github.com/DATA-DOG/go-sqlmock"
 	voting "github.com/rfdez/voting-poll/internal"
+	"github.com/rfdez/voting-poll/internal/errors"
 	"github.com/rfdez/voting-poll/internal/platform/storage/postgresql"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
