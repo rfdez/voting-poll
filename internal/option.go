@@ -3,8 +3,8 @@ package voting
 import (
 	"context"
 
-	"github.com/google/uuid"
 	"github.com/rfdez/voting-poll/internal/errors"
+	"github.com/rfdez/voting-poll/kit/uuid"
 )
 
 // OptionID represents a option identifier.
@@ -14,13 +14,13 @@ type OptionID struct {
 
 // NewOptionID instantiate the VO for OptionID.
 func NewOptionID(value string) (OptionID, error) {
-	v, err := uuid.Parse(value)
+	v, err := uuid.New(value)
 	if err != nil {
-		return OptionID{}, errors.WrapWrongInput(err, "invalid option id %s", value)
+		return OptionID{}, err
 	}
 
 	return OptionID{
-		value: v.String(),
+		value: v,
 	}, nil
 }
 

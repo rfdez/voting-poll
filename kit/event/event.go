@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/google/uuid"
+	"github.com/rfdez/voting-poll/kit/uuid"
 )
 
 // Bus defines the expected behavior of an event bus.
@@ -46,7 +46,7 @@ type BaseEvent struct {
 
 func NewBaseEvent(aggregateID string) BaseEvent {
 	return BaseEvent{
-		id:          uuid.New().String(),
+		id:          uuid.Generate(),
 		aggregateID: aggregateID,
 		occurredOn:  time.Now(),
 	}

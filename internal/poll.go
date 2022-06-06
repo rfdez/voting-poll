@@ -3,8 +3,8 @@ package voting
 import (
 	"context"
 
-	"github.com/google/uuid"
 	"github.com/rfdez/voting-poll/internal/errors"
+	"github.com/rfdez/voting-poll/kit/uuid"
 )
 
 // PollID represents a poll identifier.
@@ -14,13 +14,13 @@ type PollID struct {
 
 // NewPollID instantiate the VO for PollID.
 func NewPollID(value string) (PollID, error) {
-	v, err := uuid.Parse(value)
+	v, err := uuid.New(value)
 	if err != nil {
-		return PollID{}, errors.WrapWrongInput(err, "invalid poll id %s", value)
+		return PollID{}, err
 	}
 
 	return PollID{
-		value: v.String(),
+		value: v,
 	}, nil
 }
 
