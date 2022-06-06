@@ -2,13 +2,11 @@ package main
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
 	"log"
 	"time"
 
 	"github.com/kelseyhightower/envconfig"
-	_ "github.com/lib/pq"
 	voting "github.com/rfdez/voting-poll/internal"
 	"github.com/rfdez/voting-poll/internal/creating"
 	"github.com/rfdez/voting-poll/internal/decreasing"
@@ -27,8 +25,14 @@ func main() {
 		log.Fatal(err)
 	}
 
-	psqlURI := fmt.Sprintf("postgresql://%s:%s@%s:%d/%s?%s", cfg.DbUser, cfg.DbPass, cfg.DbHost, cfg.DbPort, cfg.DbName, cfg.DbParams)
-	db, err := sql.Open("postgres", psqlURI)
+	db, err := postgresql.NewConnection(
+		cfg.DbUser,
+		cfg.DbPass,
+		cfg.DbHost,
+		cfg.DbPort,
+		cfg.DbName,
+		cfg.DbParams,
+	)
 	if err != nil {
 		log.Fatal(err)
 	}
