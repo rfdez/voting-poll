@@ -22,7 +22,7 @@ import (
 
 func main() {
 	var cfg config
-	err := envconfig.Process("POLL", &cfg)
+	err := envconfig.Process("poll", &cfg)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -94,12 +94,12 @@ type config struct {
 	DbHost    string        `default:"localhost"`
 	DbPort    uint          `default:"5432"`
 	DbName    string        `default:"voting_poll"`
-	DbParams  string        `default:"sslmode=disable"`
+	DbParams  string        `default:""`
 	DbTimeout time.Duration `default:"5s"`
 	// RabbitMQ configuration
 	MqUser  string `default:"poll"`
 	MqPass  string `default:"poll"`
 	MqHost  string `default:"localhost"`
 	MqPort  uint   `default:"5672"`
-	MqVHost string `envconfig:"MQ_VHOST" default:"/"`
+	MqVHost string `envconfig:"MQVHOST" default:"/"`
 }
