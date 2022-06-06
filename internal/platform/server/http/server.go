@@ -52,8 +52,8 @@ func (s *Server) registerRoutes() {
 
 	// Register routes
 	s.engine.GET("/ping", health.PingHandler())
-	s.engine.PUT("/polls/:id", poll.CreateHandler(s.commandBus))
-	s.engine.PUT("/polls/:poll_id/options/:id", option.CreateHandler(s.commandBus))
+	s.engine.PUT("/polls/:poll_id", poll.CreateHandler(s.commandBus))
+	s.engine.PUT("/polls/:poll_id/options/:option_id", option.CreateHandler(s.commandBus))
 }
 
 func (s *Server) Run(ctx context.Context) error {

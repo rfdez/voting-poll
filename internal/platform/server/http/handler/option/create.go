@@ -24,7 +24,7 @@ func CreateHandler(commandBus command.Bus) gin.HandlerFunc {
 		}
 
 		err := commandBus.Dispatch(ctx, creating.NewOptionCommand(
-			ctx.Param("id"),
+			ctx.Param("option_id"),
 			req.Title,
 			req.Description,
 			ctx.Param("poll_id"),
