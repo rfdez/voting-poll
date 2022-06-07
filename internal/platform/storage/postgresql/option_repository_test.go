@@ -29,7 +29,7 @@ func Test_OptionRepository_Save_RepositoryError(t *testing.T) {
 		WithArgs(id, title, desc, pollID, votes).
 		WillReturnError(errors.New("error"))
 
-	repo := postgresql.NewOptionRepository(db, 1*time.Millisecond)
+	repo := postgresql.NewOptionRepository(db, 5*time.Second)
 
 	err = repo.Save(context.Background(), option)
 
@@ -53,7 +53,7 @@ func Test_OptionRepository_Save_Succeed(t *testing.T) {
 		WithArgs(id, title, desc, pollID, votes).
 		WillReturnResult(sqlmock.NewResult(0, 1))
 
-	repo := postgresql.NewOptionRepository(db, 1*time.Millisecond)
+	repo := postgresql.NewOptionRepository(db, 5*time.Second)
 
 	err = repo.Save(context.Background(), option)
 
@@ -73,7 +73,7 @@ func Test_OptionRepository_Find_RepositoryError(t *testing.T) {
 		WithArgs(id.String()).
 		WillReturnError(errors.New("error"))
 
-	repo := postgresql.NewOptionRepository(db, 1*time.Millisecond)
+	repo := postgresql.NewOptionRepository(db, 5*time.Second)
 
 	_, err = repo.Find(context.Background(), id)
 
@@ -96,7 +96,7 @@ func Test_OptionRepository_Find_Succeed(t *testing.T) {
 		WithArgs(id.String()).
 		WillReturnRows(rows)
 
-	repo := postgresql.NewOptionRepository(db, 1*time.Millisecond)
+	repo := postgresql.NewOptionRepository(db, 5*time.Second)
 
 	opt, err := repo.Find(context.Background(), id)
 

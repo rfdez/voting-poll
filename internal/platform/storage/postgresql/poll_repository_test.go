@@ -29,7 +29,7 @@ func Test_PollRepository_Save_RepositoryError(t *testing.T) {
 		WithArgs(id, title, desc).
 		WillReturnError(errors.New("error"))
 
-	repo := postgresql.NewPollRepository(db, 1*time.Millisecond)
+	repo := postgresql.NewPollRepository(db, 5*time.Second)
 
 	err = repo.Save(context.Background(), poll)
 
@@ -53,7 +53,7 @@ func Test_PollRepository_Save_Succeed(t *testing.T) {
 		WithArgs(id, title, desc).
 		WillReturnResult(sqlmock.NewResult(0, 1))
 
-	repo := postgresql.NewPollRepository(db, 1*time.Millisecond)
+	repo := postgresql.NewPollRepository(db, 5*time.Second)
 
 	err = repo.Save(context.Background(), poll)
 
@@ -73,7 +73,7 @@ func Test_PollRepository_Find_RepositoryError(t *testing.T) {
 		WithArgs(id.String()).
 		WillReturnError(errors.New("error"))
 
-	repo := postgresql.NewPollRepository(db, 1*time.Millisecond)
+	repo := postgresql.NewPollRepository(db, 5*time.Second)
 
 	_, err = repo.Find(context.Background(), id)
 
@@ -96,7 +96,7 @@ func Test_PollRepository_Find_Succeed(t *testing.T) {
 		WithArgs(id.String()).
 		WillReturnRows(rows)
 
-	repo := postgresql.NewPollRepository(db, 1*time.Millisecond)
+	repo := postgresql.NewPollRepository(db, 5*time.Second)
 
 	poll, err := repo.Find(context.Background(), id)
 

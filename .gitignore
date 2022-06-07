@@ -33,6 +33,7 @@ bin/
 
 junit-report.xml
 checkstyle-report.xml
+coverage.txt
 coverage.xml
 profile.cov
 yamllint-checkstyle.xml
