@@ -13,3 +13,28 @@
 
 # Dependency directories
 vendor/
+
+# Go workspace file
+go.work
+
+### Go Patch ###
+/vendor/
+/Godeps/
+
+out/
+bin/
+.vscode/*
+!.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/*.code-snippets
+
+junit-report.xml
+checkstyle-report.xml
+coverage.xml
+profile.cov
+yamllint-checkstyle.xml
+go_test.xml
+tmp/

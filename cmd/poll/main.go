@@ -2,13 +2,11 @@ package main
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
 	"log"
 	"time"
 
 	"github.com/kelseyhightower/envconfig"
-	_ "github.com/lib/pq"
 	voting "github.com/rfdez/voting-poll/internal"
 	"github.com/rfdez/voting-poll/internal/creating"
 	"github.com/rfdez/voting-poll/internal/decreasing"
@@ -22,13 +20,19 @@ import (
 
 func main() {
 	var cfg config
-	err := envconfig.Process("POLL", &cfg)
+	err := envconfig.Process("poll", &cfg)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	psqlURI := fmt.Sprintf("postgresql://%s:%s@%s:%d/%s?%s", cfg.DbUser, cfg.DbPass, cfg.DbHost, cfg.DbPort, cfg.DbName, cfg.DbParams)
-	db, err := sql.Open("postgres", psqlURI)
+	db, err := postgresql.NewConnection(
+		cfg.DbUser,
+		cfg.DbPass,
+		cfg.DbHost,
+		cfg.DbPort,
+		cfg.DbName,
+		cfg.DbParams,
+	)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -94,12 +98,12 @@ type config struct {
 	DbHost    string        `default:"localhost"`
 	DbPort    uint          `default:"5432"`
 	DbName    string        `default:"voting_poll"`
-	DbParams  string        `default:"sslmode=disable"`
+	DbParams  string        `default:""`
 	DbTimeout time.Duration `default:"5s"`
 	// RabbitMQ configuration
 	MqUser  string `default:"poll"`
 	MqPass  string `default:"poll"`
 	MqHost  string `default:"localhost"`
 	MqPort  uint   `default:"5672"`
-	MqVHost string `envconfig:"MQ_VHOST" default:"/"`
+	MqVHost string `envconfig:"MQVHOST" default:"/"`
 }

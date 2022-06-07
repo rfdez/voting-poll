@@ -25,7 +25,7 @@ func TestHandler_Create(t *testing.T) {
 
 	gin.SetMode(gin.TestMode)
 	r := gin.New()
-	r.PUT("/polls/:poll_id/options/:id", option.CreateHandler(commandBus))
+	r.PUT("/polls/:poll_id/options/:option_id", option.CreateHandler(commandBus))
 
 	t.Run("given an invalid request it returns 400", func(t *testing.T) {
 		b, err := json.Marshal(map[string]interface{}{

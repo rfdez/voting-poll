@@ -1,12 +1,34 @@
 # syntax=docker/dockerfile:1
 
-FROM golang:1.18-alpine as build
+#
+# Base
+#
+FROM golang:1.18-alpine as base
 
 WORKDIR /app
 
 ENV GO111MODULE="on"
 ENV GOOS="linux"
 ENV CGO_ENABLED=0
+
+#
+# Dev
+#
+FROM base as dev
+
+RUN go install github.com/cosmtrek/air@latest \
+    && go install github.com/go-delve/delve/cmd/dlv@latest
+
+EXPOSE 8080
+EXPOSE 2345
+
+ENTRYPOINT ["air"]
+
+#
+# Build
+#
+
+FROM base as build
 
 COPY go.mod ./
 COPY go.sum ./
@@ -20,15 +42,17 @@ COPY kit ./kit
 
 RUN go build -o /poll -a ./cmd/poll/main.go
 
-
+#
+# Deploy
+#
 FROM gcr.io/distroless/base-debian11
 
 WORKDIR /
 
-USER nonroot:nonroot
+COPY --from=build /poll /poll
 
 EXPOSE 8080
 
-ENTRYPOINT [ "/poll" ]
+USER nonroot:nonroot
 
-COPY --from=build /poll /poll
+ENTRYPOINT [ "/poll" ]
