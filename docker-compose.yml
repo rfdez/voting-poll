@@ -1,0 +1,112 @@
+version: '3.8'
+x-app:
+  &default-app
+  depends_on:
+    - db
+    - mq
+  environment:
+    POLL_DBUSER: '${DB_USER}'
+    POLL_DBPASS: '${DB_PASS}'
+    POLL_DBHOST: '${DB_HOST}'
+    POLL_DBPORT: '${DB_PORT}'
+    POLL_DBNAME: '${DB_NAME}'
+    POLL_DBPARAMS: '${DB_PARAMS}'
+    POLL_MQUSER: '${MQ_USER}'
+    POLL_MQPASS: '${MQ_PASS}'
+    POLL_MQHOST: '${MQ_HOST}'
+    POLL_MQPORT: '${MQ_PORT}'
+    POLL_MQVHOST: '${MQ_VHOST}'
+  networks:
+    - voting-poll-net
+  restart: on-failure
+services:
+  app:
+    <<: *default-app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: voting-poll-prod
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - 'curl -f http://localhost:8080/ping || exit 1'
+      interval: 1m30s
+      timeout: 30s
+      retries: 5
+      start_period: 30s
+    image: 'rfdez/voting-poll:latest'
+    ports:
+      - '8080:8080'
+  dev-app:
+    <<: *default-app
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: dev
+    container_name: voting-poll-dev
+    cap_add:
+      - SYS_PTRACE
+    image: 'rfdez/voting-poll:dev'
+    ports:
+      - '8080:8080'
+      - '2345:2345'
+    security_opt:
+      - 'seccomp:unconfined'
+    volumes:
+      - '.:/app:rw,delegated'
+  db:
+    container_name: voting-poll-db
+    environment:
+      POSTGRES_USER: '${DB_USER}'
+      POSTGRES_PASSWORD: '${DB_PASS}'
+      POSTGRES_DB: '${DB_NAME}'
+    expose:
+      - '5432'
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - pg_isready || exit 1
+      interval: 1m30s
+      timeout: 30s
+      retries: 5
+      start_period: 30s
+    image: 'postgres:14.2-alpine'
+    networks:
+      - voting-poll-net
+    restart: on-failure
+    volumes:
+      - 'voting-poll-dbdata:/var/lib/postgresql/data'
+      - './sql/:/docker-entrypoint-initdb.d'
+  mq:
+    container_name: voting-poll-mq
+    environment:
+      RABBITMQ_DEFAULT_USER: '${MQ_USER}'
+      RABBITMQ_DEFAULT_PASS: '${MQ_PASS}'
+      RABBITMQ_DEFAULT_VHOST: '${MQ_VHOST}'
+    expose:
+      - '5672'
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - rabbitmq-diagnostics -q ping
+      interval: 1m30s
+      timeout: 30s
+      retries: 5
+      start_period: 30s
+    image: 'rabbitmq:3-management'
+    networks:
+      - voting-poll-net
+    restart: on-failure
+    volumes:
+      - 'voting-poll-mqdata:/var/lib/rabbitmq'
+volumes:
+  voting-poll-dbdata:
+    driver: local
+    name: voting-poll-dbdata
+  voting-poll-mqdata:
+    driver: local
+    name: voting-poll-mqdata
+networks:
+  voting-poll-net:
+    driver: bridge
+    name: voting-poll-net
