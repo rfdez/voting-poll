@@ -5,6 +5,7 @@ import (
 
 	voting "github.com/rfdez/voting-poll/internal"
 	"github.com/rfdez/voting-poll/internal/decreasing"
+	"github.com/rfdez/voting-poll/internal/errors"
 	"github.com/rfdez/voting-poll/kit/event"
 )
 
@@ -40,7 +41,7 @@ func NewDecreasePollVotersOnVoteDeleted(decreasingService decreasing.Service) De
 func (e DecreasePollVotersOnVoteDeleted) Handle(ctx context.Context, evt event.Event) error {
 	voteDeleteEvt, ok := evt.(voting.VoteDeletedEvent)
 	if !ok {
-		return nil
+		return errors.NewWrongInput("unknown event type")
 	}
 
 	return e.decreasingService.DecreasePollVoters(ctx, voteDeleteEvt.PollID())

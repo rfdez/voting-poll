@@ -3,6 +3,8 @@ package rabbitmq
 import (
 	"regexp"
 	"strings"
+
+	"github.com/rfdez/voting-poll/kit/event"
 )
 
 func toSnakeCase(str string) string {
@@ -11,4 +13,9 @@ func toSnakeCase(str string) string {
 	snake := matchFirstCap.ReplaceAllString(str, "${1}_${2}")
 	snake = matchAllCap.ReplaceAllString(snake, "${1}_${2}")
 	return strings.ToLower(snake)
+}
+
+func getServiceName(eventType event.Type) string {
+	splited := strings.Split(string(eventType), ".")
+	return splited[1]
 }

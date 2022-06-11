@@ -85,6 +85,8 @@ services:
       RABBITMQ_DEFAULT_VHOST: '${MQ_VHOST}'
     expose:
       - '5672'
+    ports:
+      - '15672:15672'
     healthcheck:
       test:
         - CMD-SHELL

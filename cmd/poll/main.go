@@ -92,7 +92,7 @@ func main() {
 
 	if err := eventBus.Subscribe(
 		voting.VoteCreatedEventType,
-		creating.NewIncreasePollVotersOnVoteCreated(increasingService),
+		creating.NewIncreaseOptionVotesOnVoteCreated(increasingService),
 	); err != nil {
 		log.Fatal(err)
 	}

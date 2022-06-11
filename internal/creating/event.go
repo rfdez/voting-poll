@@ -4,6 +4,7 @@ import (
 	"context"
 
 	voting "github.com/rfdez/voting-poll/internal"
+	"github.com/rfdez/voting-poll/internal/errors"
 	"github.com/rfdez/voting-poll/internal/increasing"
 	"github.com/rfdez/voting-poll/kit/event"
 )
@@ -40,7 +41,7 @@ func NewIncreasePollVotersOnVoteCreated(increasingService increasing.Service) In
 func (e IncreasePollVotersOnVoteCreated) Handle(ctx context.Context, evt event.Event) error {
 	voteDeleteEvt, ok := evt.(voting.VoteCreatedEvent)
 	if !ok {
-		return nil
+		return errors.NewWrongInput("unknown event type")
 	}
 
 	return e.increasingService.IncreasePollVoters(ctx, voteDeleteEvt.PollID())
