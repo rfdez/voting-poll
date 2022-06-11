@@ -65,7 +65,7 @@ func (s *Server) Run(ctx context.Context) error {
 	}
 
 	go func() {
-		if err := srv.ListenAndServe(); err != nil {
+		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatal("HTTP server error: ", err)
 		}
 	}()

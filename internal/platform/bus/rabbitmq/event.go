@@ -2,9 +2,9 @@ package rabbitmq
 
 import (
 	"context"
-	"encoding/json"
+	"fmt"
+	"reflect"
 
-	voting "github.com/rfdez/voting-poll/internal"
 	"github.com/rfdez/voting-poll/kit/event"
 	"github.com/wagslane/go-rabbitmq"
 )
@@ -21,37 +21,35 @@ func NewEventBus(publisher *rabbitmq.Publisher, consumer rabbitmq.Consumer) *Eve
 	}
 }
 
-func (b *EventBus) Publish(ctx context.Context, event event.Event) error {
-	return b.publisher.Publish([]byte("hello, world"), []string{"routing_key"})
+func (b *EventBus) Publish(_ context.Context, event event.Event) error {
+	body, err := serialize(event)
+	if err != nil {
+		return err
+	}
+
+	return b.publisher.Publish(
+		body,
+		[]string{string(event.Type())},
+		rabbitmq.WithPublishOptionsExchange("voting-poll"),
+	)
 }
 
 func (b *EventBus) Subscribe(eventType event.Type, handler event.Handler) error {
 	return b.consumer.StartConsuming(
 		func(d rabbitmq.Delivery) rabbitmq.Action {
-			switch event.Type(d.RoutingKey) {
-			case voting.VoteDeletedEventType:
-				var body map[string]interface{}
-				err := json.Unmarshal(d.Body, &body)
-				if err != nil {
-					return rabbitmq.NackRequeue
-				}
-
-				evt := voting.NewVoteDeletedEvent(
-					body["poll_id"].(string),
-					body["option_id"].(string),
-				)
-
-				if err := handler.Handle(context.Background(), evt); err != nil {
-					return rabbitmq.NackRequeue
-				}
-
-				return rabbitmq.Ack
-			default:
-				return rabbitmq.Ack
+			evt, err := deserialize(d.Body)
+			if err != nil {
+				return rabbitmq.NackRequeue
 			}
+
+			if err := handler.Handle(context.Background(), evt); err != nil {
+				return rabbitmq.NackRequeue
+			}
+
+			return rabbitmq.Ack
 			// rabbitmq.Ack, rabbitmq.NackDiscard, rabbitmq.NackRequeue
 		},
-		"my_queue",
-		[]string{"routing_key", "routing_key_2"},
+		fmt.Sprintf("voting-app.voting-poll.%s", toSnakeCase(reflect.TypeOf(handler).Name())),
+		[]string{string(eventType)},
 	)
 }
