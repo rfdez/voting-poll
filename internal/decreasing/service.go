@@ -8,16 +8,19 @@ import (
 
 // Service is the interface that must be implemented by the decreasing service.
 type Service interface {
+	DecreasePollVoters(ctx context.Context, pollID string) error
 	DecreaseOptionVotes(ctx context.Context, optionID string) error
 }
 
 type service struct {
+	pollRepository   voting.PollRepository
 	optionRepository voting.OptionRepository
 }
 
 // NewService creates a new decreasing service.
-func NewService(optionRepository voting.OptionRepository) Service {
+func NewService(pollRepository voting.PollRepository, optionRepository voting.OptionRepository) Service {
 	return &service{
+		pollRepository:   pollRepository,
 		optionRepository: optionRepository,
 	}
 }
@@ -38,4 +41,22 @@ func (s *service) DecreaseOptionVotes(ctx context.Context, optionID string) erro
 	}
 
 	return s.optionRepository.Save(ctx, option)
+}
+
+func (s *service) DecreasePollVoters(ctx context.Context, pollID string) error {
+	pollIDVO, err := voting.NewPollID(pollID)
+	if err != nil {
+		return err
+	}
+
+	poll, err := s.pollRepository.Find(ctx, pollIDVO)
+	if err != nil {
+		return err
+	}
+
+	if err := poll.DecreaseVoters(); err != nil {
+		return err
+	}
+
+	return s.pollRepository.Save(ctx, poll)
 }

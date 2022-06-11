@@ -26,3 +26,22 @@ func (e DecreaseOptionVotesOnVoteDeleted) Handle(ctx context.Context, evt event.
 
 	return e.decreasingService.DecreaseOptionVotes(ctx, voteDeleteEvt.OptionID())
 }
+
+type DecreasePollVotersOnVoteDeleted struct {
+	decreasingService decreasing.Service
+}
+
+func NewDecreasePollVotersOnVoteDeleted(decreasingService decreasing.Service) DecreasePollVotersOnVoteDeleted {
+	return DecreasePollVotersOnVoteDeleted{
+		decreasingService: decreasingService,
+	}
+}
+
+func (e DecreasePollVotersOnVoteDeleted) Handle(ctx context.Context, evt event.Event) error {
+	voteDeleteEvt, ok := evt.(voting.VoteDeletedEvent)
+	if !ok {
+		return nil
+	}
+
+	return e.decreasingService.DecreasePollVoters(ctx, voteDeleteEvt.PollID())
+}

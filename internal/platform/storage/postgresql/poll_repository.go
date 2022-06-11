@@ -44,7 +44,7 @@ func (r *pollRepository) Find(ctx context.Context, id voting.PollID) (voting.Pol
 		return voting.Poll{}, errors.Wrap(err, "error finding poll")
 	}
 
-	p, err := voting.NewPoll(poll.ID, poll.Title, poll.Description)
+	p, err := voting.NewPoll(poll.ID, poll.Title, poll.Description, poll.Voters)
 	if err != nil {
 		return voting.Poll{}, err
 	}
@@ -60,11 +60,12 @@ func (r *pollRepository) Save(ctx context.Context, poll voting.Poll) error {
 		ID:          poll.ID().String(),
 		Title:       poll.Title().String(),
 		Description: poll.Description().String(),
+		Voters:      poll.Voters().Value(),
 	})
 	sb.SQL(`
 		ON CONFLICT (id)
 		DO UPDATE SET
-			title = EXCLUDED.title, description = EXCLUDED.description`)
+			title = EXCLUDED.title, description = EXCLUDED.description, voters = EXCLUDED.voters`)
 
 	query, args := sb.BuildWithFlavor(sqlbuilder.PostgreSQL)
 

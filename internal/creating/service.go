@@ -26,7 +26,9 @@ func NewService(pollRepository voting.PollRepository, optionRepository voting.Op
 }
 
 func (s *service) CreatePoll(ctx context.Context, id, title, description string) error {
-	poll, err := voting.NewPoll(id, title, description)
+	initialPollVoters := 0
+
+	poll, err := voting.NewPoll(id, title, description, initialPollVoters)
 	if err != nil {
 		return err
 	}

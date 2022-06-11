@@ -14,8 +14,8 @@ import (
 )
 
 func Test_PollRepository_Save_RepositoryError(t *testing.T) {
-	id, title, desc := "37a0f027-15e6-47cc-a5d2-64183281087e", "Test Poll", "Test description"
-	poll, err := voting.NewPoll(id, title, desc)
+	id, title, desc, voters := "37a0f027-15e6-47cc-a5d2-64183281087e", "Test Poll", "Test description", 0
+	poll, err := voting.NewPoll(id, title, desc, voters)
 	require.NoError(t, err)
 
 	db, sqlMock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
@@ -38,8 +38,8 @@ func Test_PollRepository_Save_RepositoryError(t *testing.T) {
 }
 
 func Test_PollRepository_Save_Succeed(t *testing.T) {
-	id, title, desc := "37a0f027-15e6-47cc-a5d2-64183281087e", "Test Poll", "Test description"
-	poll, err := voting.NewPoll(id, title, desc)
+	id, title, desc, voters := "37a0f027-15e6-47cc-a5d2-64183281087e", "Test Poll", "Test description", 0
+	poll, err := voting.NewPoll(id, title, desc, voters)
 	require.NoError(t, err)
 
 	db, sqlMock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))

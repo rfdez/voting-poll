@@ -63,7 +63,7 @@ func main() {
 
 	var (
 		creatingService   = creating.NewService(pollRepository, optionRepository)
-		decreasingService = decreasing.NewService(optionRepository)
+		decreasingService = decreasing.NewService(pollRepository, optionRepository)
 	)
 
 	var (
@@ -77,6 +77,13 @@ func main() {
 	if err := eventBus.Subscribe(
 		voting.VoteDeletedEventType,
 		deleting.NewDecreaseOptionVotesOnVoteDeleted(decreasingService),
+	); err != nil {
+		log.Fatal(err)
+	}
+
+	if err := eventBus.Subscribe(
+		voting.VoteDeletedEventType,
+		deleting.NewDecreasePollVotersOnVoteDeleted(decreasingService),
 	); err != nil {
 		log.Fatal(err)
 	}

@@ -71,11 +71,33 @@ func (description PollDescription) String() string {
 	return description.value
 }
 
+// PollVoters represents the number of voters for a poll.
+type PollVoters struct {
+	value int
+}
+
+// NewPollVoters creates a new PollVoters.
+func NewPollVoters(value int) (PollVoters, error) {
+	if value < 0 {
+		return PollVoters{}, errors.NewWrongInput("poll voters cannot be negative")
+	}
+
+	return PollVoters{
+		value: value,
+	}, nil
+}
+
+// Value returns the Option votes.
+func (votes PollVoters) Value() int {
+	return votes.value
+}
+
 // Poll is the data structure that represents a poll.
 type Poll struct {
 	id          PollID
 	title       PollTitle
 	description PollDescription
+	voters      PollVoters
 }
 
 // PollRepository is the interface that must be implemented by the poll repository.
@@ -87,7 +109,7 @@ type PollRepository interface {
 //go:generate mockery --case=snake --outpkg=storagemocks --output=platform/storage/storagemocks --name=PollRepository
 
 // NewPoll creates a new poll.
-func NewPoll(id, name, description string) (Poll, error) {
+func NewPoll(id, name, description string, voters int) (Poll, error) {
 	idVO, err := NewPollID(id)
 	if err != nil {
 		return Poll{}, err
@@ -100,10 +122,16 @@ func NewPoll(id, name, description string) (Poll, error) {
 
 	descriptionVO := NewPollDescription(description)
 
+	votersVO, err := NewPollVoters(voters)
+	if err != nil {
+		return Poll{}, err
+	}
+
 	poll := Poll{
 		id:          idVO,
 		title:       titleVO,
 		description: descriptionVO,
+		voters:      votersVO,
 	}
 
 	return poll, nil
@@ -122,4 +150,20 @@ func (p Poll) Title() PollTitle {
 // Description returns the poll description.
 func (p Poll) Description() PollDescription {
 	return p.description
+}
+
+// Voters returns the Poll voters.
+func (p Poll) Voters() PollVoters {
+	return p.voters
+}
+
+// DecreaseVoters decreases the Poll voters.
+func (p *Poll) DecreaseVoters() error {
+	if p.voters.value == 0 {
+		return errors.NewWrongInput("cannot decrease votes when poll has no voters")
+	}
+
+	p.voters.value--
+
+	return nil
 }
