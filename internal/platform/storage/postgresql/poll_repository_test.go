@@ -22,11 +22,11 @@ func Test_PollRepository_Save_RepositoryError(t *testing.T) {
 	require.NoError(t, err)
 
 	sqlMock.ExpectExec(`
-		INSERT INTO polls (id, title, description) VALUES ($1, $2, $3)
+		INSERT INTO polls (id, title, description, voters) VALUES ($1, $2, $3, $4)
 			ON CONFLICT (id)
 			DO UPDATE SET
-				title = EXCLUDED.title, description = EXCLUDED.description`).
-		WithArgs(id, title, desc).
+				title = EXCLUDED.title, description = EXCLUDED.description, voters = EXCLUDED.voters`).
+		WithArgs(id, title, desc, voters).
 		WillReturnError(errors.New("error"))
 
 	repo := postgresql.NewPollRepository(db, 5*time.Second)
@@ -46,11 +46,11 @@ func Test_PollRepository_Save_Succeed(t *testing.T) {
 	require.NoError(t, err)
 
 	sqlMock.ExpectExec(`
-		INSERT INTO polls (id, title, description) VALUES ($1, $2, $3)
+		INSERT INTO polls (id, title, description, voters) VALUES ($1, $2, $3, $4)
 			ON CONFLICT (id)
 			DO UPDATE SET
-				title = EXCLUDED.title, description = EXCLUDED.description`).
-		WithArgs(id, title, desc).
+				title = EXCLUDED.title, description = EXCLUDED.description, voters = EXCLUDED.voters`).
+		WithArgs(id, title, desc, voters).
 		WillReturnResult(sqlmock.NewResult(0, 1))
 
 	repo := postgresql.NewPollRepository(db, 5*time.Second)
@@ -69,7 +69,7 @@ func Test_PollRepository_Find_RepositoryError(t *testing.T) {
 	require.NoError(t, err)
 
 	sqlMock.ExpectQuery(
-		"SELECT polls.id, polls.title, polls.description FROM polls WHERE id = $1").
+		"SELECT polls.id, polls.title, polls.description, polls.voters FROM polls WHERE id = $1").
 		WithArgs(id.String()).
 		WillReturnError(errors.New("error"))
 
@@ -88,11 +88,11 @@ func Test_PollRepository_Find_Succeed(t *testing.T) {
 	db, sqlMock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
 	require.NoError(t, err)
 
-	rows := sqlmock.NewRows([]string{"id", "title", "description"}).
-		AddRow(id.String(), "Test Poll", "Test description")
+	rows := sqlmock.NewRows([]string{"id", "title", "description", "voters"}).
+		AddRow(id.String(), "Test Poll", "Test description", 0)
 
 	sqlMock.ExpectQuery(
-		"SELECT polls.id, polls.title, polls.description FROM polls WHERE id = $1").
+		"SELECT polls.id, polls.title, polls.description, polls.voters FROM polls WHERE id = $1").
 		WithArgs(id.String()).
 		WillReturnRows(rows)
 
