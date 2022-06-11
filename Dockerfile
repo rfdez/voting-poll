@@ -45,7 +45,7 @@ RUN go build -o /poll -a ./cmd/poll/main.go
 #
 # Deploy
 #
-FROM gcr.io/distroless/base-debian11
+FROM gcr.io/distroless/base-debian11@sha256:939dfb256d9df9d648cf9032802f22203a7213dcba088bd52469671241d04770
 
 WORKDIR /
 
