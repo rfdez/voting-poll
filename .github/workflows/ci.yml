@@ -112,29 +112,10 @@ jobs:
           key: ${{ runner.os }}-golang-${{ hashFiles('**/go.sum') }}
           restore-keys: |
             ${{ runner.os }}-golang-
-      - name: Install required packages
+      - name: Run Go Tests
         run: |
-          go install gotest.tools/gotestsum@v1.8.1
-          go install github.com/t-yuki/gocover-cobertura@v0.0.0-20180217150009-aaee18c8195c
-      - name: Run gotestsum
-        run: |
-          gotestsum --junitfile go_test.xml --format testname -- -short -race -coverprofile coverage.txt -covermode atomic -buildvcs=false $(go list ./... | grep -v /vendor/ | tr '\n' ' ')
-      - name: Prepare code coverage artifact
-        run: |
-          gocover-cobertura < coverage.txt > coverage.xml
-          sed -i 's;filename=\"github.com/rfdez/voting-poll/;filename=\";g' coverage.xml
-      - name: Upload code coverage artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: code-coverage-report
-          path: coverage.xml
-          retention-days: 3
-      - name: Upload tests result
-        uses: actions/upload-artifact@v3
-        with:
-          name: tests-result
-          path: go_test.xml
-          retention-days: 3
+          go test -short -race -coverprofile coverage.txt -covermode atomic $(go list ./... | grep -v /vendor/ | tr '\n' ' ')
+          go tool cover -func=coverage.txt
       - name: Upload code coverage information to codecov.io
         uses: codecov/codecov-action@v2
         with:
