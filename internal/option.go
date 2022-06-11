@@ -179,3 +179,8 @@ func (p *Option) DecreaseVotes() error {
 
 	return nil
 }
+
+// IncreaseVotes increases the Option votes.
+func (p *Option) IncreaseVotes() {
+	p.votes.value++
+}

@@ -47,6 +47,9 @@ func deserialize(data []byte) (event.Event, error) {
 	case voting.VoteDeletedEventType:
 		evt := new(voting.VoteDeletedEvent)
 		return evt.FromPrimitives(d.Data.ID, d.Data.Attributes, d.Data.ID, d.Data.OccurredOn)
+	case voting.VoteCreatedEventType:
+		evt := new(voting.VoteCreatedEvent)
+		return evt.FromPrimitives(d.Data.ID, d.Data.Attributes, d.Data.ID, d.Data.OccurredOn)
 	default:
 		return nil, errors.New("unknown event type")
 	}

@@ -11,6 +11,7 @@ import (
 	"github.com/rfdez/voting-poll/internal/creating"
 	"github.com/rfdez/voting-poll/internal/decreasing"
 	"github.com/rfdez/voting-poll/internal/deleting"
+	"github.com/rfdez/voting-poll/internal/increasing"
 	"github.com/rfdez/voting-poll/internal/platform/bus/inmemory"
 	"github.com/rfdez/voting-poll/internal/platform/bus/rabbitmq"
 	"github.com/rfdez/voting-poll/internal/platform/server/http"
@@ -64,6 +65,7 @@ func main() {
 	var (
 		creatingService   = creating.NewService(pollRepository, optionRepository)
 		decreasingService = decreasing.NewService(pollRepository, optionRepository)
+		increasingService = increasing.NewService(pollRepository, optionRepository)
 	)
 
 	var (
@@ -84,6 +86,20 @@ func main() {
 	if err := eventBus.Subscribe(
 		voting.VoteDeletedEventType,
 		deleting.NewDecreasePollVotersOnVoteDeleted(decreasingService),
+	); err != nil {
+		log.Fatal(err)
+	}
+
+	if err := eventBus.Subscribe(
+		voting.VoteCreatedEventType,
+		creating.NewIncreasePollVotersOnVoteCreated(increasingService),
+	); err != nil {
+		log.Fatal(err)
+	}
+
+	if err := eventBus.Subscribe(
+		voting.VoteCreatedEventType,
+		creating.NewIncreasePollVotersOnVoteCreated(increasingService),
 	); err != nil {
 		log.Fatal(err)
 	}

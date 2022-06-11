@@ -167,3 +167,8 @@ func (p *Poll) DecreaseVoters() error {
 
 	return nil
 }
+
+// IncreaseVoters increases the Poll voters.
+func (p *Poll) IncreaseVoters() {
+	p.voters.value++
+}
