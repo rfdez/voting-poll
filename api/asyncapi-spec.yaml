@@ -1,0 +1,73 @@
+asyncapi: 2.4.0
+info:
+  title: Voting Poll API
+  version: 1.0.0
+servers:
+    local:
+      url: localhost:5672
+      protocol: amqp
+      protocolVersion: 0.9.1
+      description: Local server
+defaultContentType: application/json
+channels:
+  voting-app.voting-vote.1.event.vote.created:
+    description: The topic on which vote created values may be produced and consumed
+    publish:
+      summary: Inform about a new vote
+      operationId: receiveVoteCreated
+      message:
+        $ref: '#/components/messages/VoteCreated'
+      bindings:
+        amqp:
+          is: routingKey
+          exchange:
+            name: voting-vote
+            type: topic
+            durable: true
+            autoDelete: false
+            vhost: /
+          bindingVersion: 0.2.0
+  voting-app.voting-vote.1.event.vote.deleted:
+    description: The topic on which vote deleted values may be produced and consumed
+    publish:
+      summary: Inform about a deleted vote
+      operationId: receiveVoteDeleted
+      message:
+        $ref: '#/components/messages/VoteDeleted'
+      bindings:
+        amqp:
+          is: routingKey
+          exchange:
+            name: voting-vote
+            type: topic
+            durable: true
+            autoDelete: false
+            vhost: /
+          bindingVersion: 0.2.0
+components:
+  messages:
+    VoteCreated:
+      name: VoteCreated
+      title: Vote Created
+      summary: Inform about a new vote
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/VotePayload'
+    VoteDeleted:
+      name: VoteDeleted
+      title: Vote Deleted
+      summary: Inform about a deleted vote
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/VotePayload'
+  schemas:
+    VotePayload:
+      name: VotePayload
+      type: object
+      properties:
+        poll_id:
+          type: string
+          description: The Poll id
+        option_id:
+          type: string
+          description: The Option id
