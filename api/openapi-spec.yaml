@@ -1,0 +1,165 @@
+openapi: 3.1.0
+info:
+  title: Voting Poll API
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080
+    description: Local server
+paths:
+  /ping:
+    get:
+      tags:
+        - Health
+      operationId: ping
+      summary: Application Health Check
+      description: Check if the application is running
+      responses:
+        '200':
+          description: Status OK
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: pong
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /polls/{poll_id}:
+    put:
+      tags:
+        - Poll
+      operationId: createPoll
+      summary: Create a poll
+      description: Update a poll, if not exists, create a new one
+      responses:
+        '201':
+          $ref: '#/components/responses/Created'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      parameters:
+        - $ref: '#/components/parameters/PollId'
+      requestBody:
+        $ref: '#/components/requestBodies/CreatePoll'
+  /polls/{poll_id}/options/{option_id}:
+    put:
+      tags:
+        - Option
+      operationId: createOption
+      summary: Create a option
+      description: Update a option, if not exists, create a new one
+      responses:
+        '201':
+          $ref: '#/components/responses/Created'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      parameters:
+        - $ref: '#/components/parameters/PollId'
+        - $ref: '#/components/parameters/OptionId'
+      requestBody:
+        $ref: '#/components/requestBodies/CreateOption'
+
+components:
+  schemas:
+    Poll:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Poll ID
+        title:
+          type: string
+          description: Poll title
+        description:
+          type: string
+          description: Poll description
+        voters:
+          type: integer
+          description: Number of voters
+    Option:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Option ID
+        poll_id:
+          type: string
+          description: Poll ID
+        title:
+          type: string
+          description: Option title
+        description:
+          type: string
+          description: Option description
+        votes:
+          type: integer
+          description: Number of votes
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Error message
+  parameters:
+    PollId:
+      name: poll_id
+      in: path
+      description: Poll ID
+      required: true
+      schema:
+        type: string
+    OptionId:
+      name: option_id
+      in: path
+      description: Option ID
+      required: true
+      schema:
+        type: string
+  requestBodies:
+    CreatePoll:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              title:
+                type: string
+                description: Poll title
+              description:
+                type: string
+                description: Poll description
+            required:
+              - title
+    CreateOption:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              title:
+                type: string
+                description: Option title
+              description:
+                type: string
+                description: Option description
+            required:
+              - title
+  responses:
+    Created:
+      description: Status Created
+    BadRequest:
+      description: Status Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: Status Not Found
+    InternalServerError:
+          description: Status Internal Server Error
