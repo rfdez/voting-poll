@@ -19,7 +19,9 @@ func CreateHandler(commandBus command.Bus) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var req createRequest
 		if err := ctx.ShouldBindJSON(&req); err != nil {
-			ctx.JSON(http.StatusBadRequest, err.Error())
+			ctx.JSON(http.StatusBadRequest, gin.H{
+				"message": err.Error(),
+			})
 			return
 		}
 
@@ -31,10 +33,12 @@ func CreateHandler(commandBus command.Bus) gin.HandlerFunc {
 		if err != nil {
 			switch {
 			case errors.IsWrongInput(err):
-				ctx.JSON(http.StatusBadRequest, err.Error())
+				ctx.JSON(http.StatusBadRequest, gin.H{
+					"message": err.Error(),
+				})
 				return
 			default:
-				ctx.JSON(http.StatusInternalServerError, err.Error())
+				ctx.Status(http.StatusInternalServerError)
 				return
 			}
 		}
