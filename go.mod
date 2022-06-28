@@ -25,7 +25,7 @@ require (
 	github.com/goccy/go-json v0.9.7 // indirect
 	github.com/google/go-cmp v0.5.5 // indirect
 	github.com/google/uuid v1.3.0
-	github.com/huandu/go-sqlbuilder v1.13.0
+	github.com/huandu/go-sqlbuilder v1.14.0
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/lib/pq v1.10.6
